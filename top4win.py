@@ -23,16 +23,12 @@ def os_checking():
         sys.exit('operating system must be windows')
 
 
-
-# converts number in string type to integer type
 def int_convert(value,code):
     try:
         try:
             if code != 3 and code != 4:
-            # excepting 3 and 4, because of these are non number options or strings characters options
-                return int(value) # return converted string to integer
+                return int(value)
             else:
-                # if it's not a number, it's letters(string chars), returns the letters(string chars) itself
                 return value
 
         except:
@@ -54,86 +50,84 @@ def kill_proccess(option,signterm,value,numbers,names):
 
         if option == 1:
         # option one choiced, PIN option (proccess identification number)
-            pid = int_convert(numbers[value],1) # converts pid returned in the function to integer type
-            command = f"taskkill{signterm}/pid {pid}" # command to run on the system
+            pid = int_convert(numbers[value],1)
+            command = f"taskkill{signterm}/pid {pid}"
             os.system(command)
 
         elif option == 2:
         # option two choiced, PID option (proccess identification)
-            command = f"taskkill{signterm} /pid {value}" # command to run on the system
+            command = f"taskkill{signterm} /pid {value}"
             os.system(command)
 
         elif option == 3:
         # option three choiced, PN option (program name)
             # if given value is greatter than four characters
             if len(value) > 4:
-            # check if the lasts four characters are '.exe'
                 exe_check = value[-4] + value[-3] + value[-2] + value[-1]
                 if exe_check != '.exe':
                 # if the lasts four characters are not '.exe'
-                    value = value + ".exe" # appends '.exe' extension th the (value/name/proccess name given)
-                    pid = names[value] # gets the pid with 'proccess name' as velue
-                    command = f"taskkill{signterm} /pid {pid}" # command to run on the system
+                    value = value + ".exe"
+                    pid = names[value]
+                    command = f"taskkill{signterm} /pid {pid}"
                     os.system(command)
 
                 else:
                 # if the lasts four characters are '.exe'
-                    pid = numbers[value] # gets the pid (using proccess name as key)
-                    command = f"taskkill{signterm} /pid {pid}" # command to run on the system
+                    pid = numbers[value]
+                    command = f"taskkill{signterm} /pid {pid}"
                     os.system(command)
 
             else:
             # if the given value is not greatter than four, if it's less than four 
-                pid = numbers[value] # gets the pid directly with the given value (cause it can be a proccess name without .exe extension or something like that)
-                command = f"taskkill{signterm} /pid {pid}" # command to run on the system
+                pid = numbers[value]
+                command = f"taskkill{signterm} /pid {pid}"
                 os.system(command)
 
 
         elif option == 4:
         # option four choiced, PCN option (program complete name or complete proccess name)
-            pid = names[value] # gets the pid using given value as key (is waited that the given value / 'complete proccess name' is correctly)
-            command = f"taskkill{signterm} /pid {pid}" # command to run on the system
+            pid = names[value]
+            command = f"taskkill{signterm} /pid {pid}"
             os.system(command)
 
         else:
-        # if choiced option is invalid
+
             sys.exit(f"error: wrong option code {option}")
 
     except Exception as error:
         sys.exit(error)
 
-# (this function) do all the action of getting and managing the proccess's
+
 def proccess():
     try:
         numbers = {} # this dict stores 'pin' as key and 'pid' as value (all pin's and pid's)
-        max = 34 # (number) total of bytes of IMAGE NAME and PID part (of output of tasklist command)
-        min = 25 # (number) total of bytes of IMAGE NAME part in output of tasklist command (total bytes of IMAGE NAME part without PID part)
+        max = 34
+        min = 25
         names = {} # this dict stores 'proccess name' as key and 'pid' as value (do it will all proccess names and pid's)
-        number = 0 # counter
-        data = os.popen("tasklist").read() # output of system proccess
-        line, lines = '',[] # each line of all proccess line, and all lines of all proccess lines (each line(string), and all lines(list))
-        n = -3 # pin counter to work after 'number' var stops (this -3 stands for the first three lines in 'tasklist' command output, these first 3 lines are not necessary so we jump it and go directly to the proccess's)
+        number = 0
+        data = os.popen("tasklist").read()
+        line, lines = '',[]
+        n = -3 
         for character in data:
-        # for each character in system proccess's strings
-            line += character # increment each charcter in 'line' variable
+            line += character
             if character == '\n':
             # if character is an break line (\n) 
-                lines.append(line) # append 'line' variable to 'lines' list var
-                number += 1 # increments the counter variable 'number'
-                n +=1 # keep incrementing like 'number' var, also/so/cause it comes to help the 'number' var
-                proccess_pid = line[min:max] # it takes just PID part only (takes it from each line of tasklist command output)
-                name_end = line.find(" ") # finds the first 'white_space' in line (to take just the proccess name)
-                process_name = line[:name_end] # proccess name, taked betwen the start of the line until the first white_space found
+                lines.append(line)
+                number += 1 
+                n +=1
+                proccess_pid = line[min:max]
+                name_end = line.find(" ")
+                process_name = line[:name_end]
 
                 if number == 3:
-                # if counter variable is equal to one
+                    
                     names = {} # cleans (dict) 'names'
                     numbers = {} # cleans (dict) 'numbers'
                     lines = [] # cleans (list) 'lines'
 
-                names[process_name] = proccess_pid # (dict 'names') with 'proccess name' as key/identifier and 'proccess pid' as value
-                numbers[n] = proccess_pid # 'numbers' dict, with 'n' var as key, and proccess 'pid' as value
-                line = "" # after add line to lines and use it for others things, cleans line var to prepare it to receive the next proccess line (to be prepared to receive the next line of proccess)
+                names[process_name] = proccess_pid
+                numbers[n] = proccess_pid
+                line = ""
 
             else:
             # if character is not equal to break line '\n' just keep adding/appending character to 'line' variable
@@ -143,11 +137,11 @@ def proccess():
         print("PIN ==== ====== PCN ==================  PID =========================================",end="\n\n")
         for each_line in lines:
         # for each line in all lines (proccess info's separeted in lines)
-            n+=1 # a variable to print as pin value (pin value part)
-            str_n = str(n) # converts counter variable 'n' to string type
-            buffer_n = (8-len(str_n)) * " " # 8 is the number of PIN buffer, (bytes reserved to store PIN number)
-            buffer_n = str_n + buffer_n # completes counter var with complete buffer of 8 bytes
-            print(f"{buffer_n} {each_line}",end="") # prints pin, and a complete line of proccess
+            n+=1
+            str_n = str(n)
+            buffer_n = (8-len(str_n)) * " "
+            buffer_n = str_n + buffer_n 
+            print(f"{buffer_n} {each_line}",end="")
         
         return numbers, names, lines
 
@@ -205,17 +199,11 @@ def user_input():
 
 # (this function) checking if operating system is windows
 os_checking()
-
-# (this function) takes and (treat)proccess (all)the proccess
 pin_pid, pcn, proccess_lines = proccess()
 
 # user data inputs
 option, signterm, value = user_input()
-
-# if is string number converts it to a integer number
 value = int_convert(value,option)
-
-# converts signalterm string number to a integer type
 signterm = int_convert(signterm,0)
 
 # (this function) kills the proccess
